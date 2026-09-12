@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2/4 Мусиқа Вақти - Али Билан Интерактив Ўйин</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        user-select: none;
+    }
+
+    body {
+        background: linear-gradient(135deg, #a8edf7 0%, #514a9d 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: #333;
+    }
+
+    .game-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        padding: 30px;
+        max-width: 900px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+    }
+
+    .header-zone {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        background: #f0f4f8;
+        padding: 15px 25px;
+        border-radius: 16px;
+    }
+
+    .score-board {
+        font-size: 20px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+
+    .character-avatar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .avatar-img {
+        width: 60px;
+        height: 60px;
+        background: #ffbe0b;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        border: 3px solid #ff007f;
+    }
+
+    .speech-bubble {
+        background: #fff;
+        border: 2px solid #514a9d;
+        border-radius: 12px;
+        padding: 8px 15px;
+        font-weight: 600;
+        color: #514a9d;
+        position: relative;
+    }
+
+    h1 {
+        font-size: 28px;
+        color: #3a1c71;
+        margin-bottom: 10px;
+    }
+
+    p.instruction {
+        font-size: 18px;
+        color: #555;
+        margin-bottom: 25px;
+    }
+
+    /* Target Drop Box */
+    .rhythm-box-container {
+        position: relative;
+        width: 100%;
+        max-width: 700px;
+        height: 350px;
+        margin: 0 auto 30px auto;
+        background-color: #ffd166;
+        border: 4px solid #f77f00;
+        border-radius: 20px;
+        display: flex;
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .time-signature-label {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 42px;
+        font-weight: 900;
+        color: #2b2d42;
+        background: rgba(255,255,255,0.6);
+        padding: 5px 15px;
+        border-radius: 12px;
+        z-index: 5;
+    }
+
+    .drop-slot {
+        flex: 1;
+        height: 100%;
+        border-right: 3px dashed #f77f00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+        padding: 10px;
+        position: relative;
+    }
+
+    .drop-slot:last-child {
+        border-right: none;
+    }
+
+    .drop-slot.drag-over {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Drag Cards Source */
+    .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 25px;
+    }
+
+    .draggable-card {
+        width: 180px;
+        height: 180px;
+        background: #ffffff;
+        border: 3px solid #4cc9f0;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: grab;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .draggable-card:active {
+        cursor: grabbing;
+        transform: scale(1.05);
+    }
+
+    .draggable-card img {
+        width: 120px;
+        height: 120px;
+        object-fit: contain;
+        pointer-events: none;
+    }
+
+    .card-label {
+        margin-top: 5px;
+        font-weight: bold;
+        color: #4361ee;
+    }
+
+    /* Controls */
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .btn {
+        background: linear-gradient(45deg, #ff007f, #7928ca);
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(121, 40, 202, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(121, 40, 202, 0.6);
+    }
+
+    .btn-reset {
+        background: #6c757d;
+        box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    /* Placed note design inside slots */
+    .placed-item {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .placed-item img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+    }
+
+    /* Feedback Modal / Overlay */
+    .feedback-modal {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        border-radius: 24px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 10;
+    }
+
+    .feedback-modal h2 {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .feedback-modal p {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* SVG note placeholders if images missing */
+    .fallback-note {
+        font-size: 80px;
+    }
+</style>
+</head>
+<body>
+
+<div class="game-container">
+    <div class="header-zone">
+        <div class="character-avatar">
+            <div class="avatar-img">👦</div>
+            <div class="speech-bubble" id="ali-speech">Салом! Мен Алиман. Катакчаларни 2/4 тактга тўлдиринг!</div>
+        </div>
+        <div class="score-board">
+            Балл: <span id="score-val" style="color: #ff007f;">0</span>
+        </div>
+    </div>
+
+    <h1>🎵 2/4 Мусиқий Ўлчов Ўйини</h1>
+    <p class="instruction">Пастдаги ноталарни сариқ қутичага судраб олиб келинг ва тактни тўлдиринг!</p>
+
+    <!-- Target Box Area -->
+    <div class="rhythm-box-container" id="rhythm-box">
+        <div class="time-signature-label">2/4</div>
+        <div class="drop-slot" data-slot="0"></div>
+        <div class="drop-slot" data-slot="1"></div>
+    </div>
+
+    <!-- Draggable Cards Area -->
+    <div class="cards-container">
+        <!-- Quarter Note Card -->
+        <div class="draggable-card" draggable="true" id="card-quarter" data-type="quarter" data-value="1">
+            <img src="quarter.png" alt="Чораклик Нота" onerror="this.outerHTML='<div class='fallback-note'>♩</div>'">
+            <div class="card-label">Чораклик (1 ҳисоб)</div>
+        </div>
+
+        <!-- Eighths Note Card -->
+        <div class="draggable-card" draggable="true" id="card-eighths" data-type="eighths" data-value="1">
+            <img src="eighths.png" alt="Нимчораклик Ноталар" onerror="this.outerHTML='<div class='fallback-note'>♫</div>'">
+            <div class="card-label">Нимчоракликлар (1 ҳисоб)</div>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="btn-group">
+        <button class="btn btn-reset" onclick="resetGame()">Тозалаш</button>
+        <button class="btn" onclick="checkAnswer()">Текшириш ✨</button>
+    </div>
+
+    <!-- Modal Feedback -->
+    <div class="feedback-modal" id="feedbackModal">
+        <h2 id="modalTitle">Баракалла! 🎉</h2>
+        <p id="modalDesc">Такт тўғри йиғилди!</p>
+        <button class="btn" onclick="nextLevel()">Давом этиш 🚀</button>
+    </div>
+</div>
+
+<script>
+    let currentSlots = [null, null];
+    let score = 0;
+
+    const draggables = document.querySelectorAll('.draggable-card');
+    const dropSlots = document.querySelectorAll('.drop-slot');
+    const aliSpeech = document.getElementById('ali-speech');
+    const scoreVal = document.getElementById('score-val');
+    const modal = document.getElementById('feedbackModal');
+
+    draggables.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', card.dataset.type);
+            card.style.opacity = '0.5';
+        });
+
+        card.addEventListener('dragend', () => {
+            card.style.opacity = '1';
+        });
+    });
+
+    dropSlots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('drag-over');
+        });
+
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            const noteType = e.dataTransfer.getData('text/plain');
+            const slotIndex = parseInt(slot.dataset.slot);
+
+            if (noteType) {
+                placeNoteInSlot(slotIndex, noteType);
+            }
+        });
+    });
+
+    function placeNoteInSlot(index, type) {
+        currentSlots[index] = type;
+        const slot = dropSlots[index];
+        const imgSrc = type === 'quarter' ? 'quarter.png' : 'eighths.png';
+        const fallbackSymbol = type === 'quarter' ? '♩' : '♫';
+
+        slot.innerHTML = `
+            <div class="placed-item">
+                <img src="${imgSrc}" alt="${type}" onerror="this.outerHTML='<div class='fallback-note'>${fallbackSymbol}</div>'">
+            </div>
+        `;
+
+        aliSpeech.textContent = "Ажойиб! Иккала бўлимни ҳам тўлдиринг ва текширинг!";
+    }
+
+    function resetGame() {
+        currentSlots = [null, null];
+        dropSlots.forEach(slot => {
+            slot.innerHTML = '';
+        });
+        aliSpeech.textContent = "Катакчаларни 2/4 тактга тўлдиринг!";
+    }
+
+    function checkAnswer() {
+        if (currentSlots[0] && currentSlots[1]) {
+            score += 10;
+            scoreVal.textContent = score;
+            document.getElementById('modalTitle').textContent = "Баракалла! 🎉";
+            document.getElementById('modalDesc').textContent = "2/4 ўлчовдаги такт мукаммал тузилди!";
+            modal.style.display = 'flex';
+            aliSpeech.textContent = "Жуда саводли! Сен мусиқани аъло биласан!";
+        } else {
+            aliSpeech.textContent = "Иккала катакни ҳам ноталар билан тўлдиринг!";
+        }
+    }
+
+    function nextLevel() {
+        modal.style.display = 'none';
+        resetGame();
+    }
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2/4 Ritm Пазли - Али Билaн</title>
+    <title>2/4 Musiqa Vaqti - Ali Bilan</title>
     <style>
         * {
             box-sizing: border-box;
@@ -27,28 +27,24 @@
             padding: 30px;
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            max-width: 900px;
+            max-width: 700px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
             text-align: center;
         }
 
         h1 {
             color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 28px;
+            font-size: 26px;
         }
 
-        .main-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
-        }
-
+        /* Video yuqorida */
         .video-box {
             width: 100%;
-            max-width: 420px;
+            max-width: 500px;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 8px 20px rgba(0,0,0,0.1);
@@ -60,28 +56,27 @@
             display: block;
         }
 
+        /* Interaktiv qism pastda */
         .interactive-area {
-            flex: 1;
-            min-width: 300px;
+            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 20px;
         }
 
-        /* Такт идишлари (Drop slots) */
         .measure-container {
             display: flex;
             gap: 15px;
             background: #f8f9fa;
-            padding: 20px;
+            padding: 15px 25px;
             border-radius: 16px;
             border: 3px dashed #bdc3c7;
         }
 
         .slot {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border: 2px dashed #3498db;
             border-radius: 12px;
             background: #ffffff;
@@ -103,7 +98,6 @@
             object-fit: contain;
         }
 
-        /* Ноталар палитраси */
         .notes-palette {
             display: flex;
             gap: 15px;
@@ -116,8 +110,8 @@
         }
 
         .note {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             cursor: grab;
@@ -144,7 +138,7 @@
             background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
             border: none;
-            padding: 14px 32px;
+            padding: 14px 36px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 50px;
@@ -157,55 +151,43 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
         }
-
-        .btn-check:active {
-            transform: translateY(1px);
-        }
     </style>
 </head>
 <body>
 
 <div class="game-container">
-    <h1>🎶 2/4 Мусиқа Вақти - Али Билaн</h1>
+    <h1>🎶 2/4 Musiqa Vaqti - Ali Bilan</h1>
 
-    <div class="main-content">
-        <!-- Видео ойнаси -->
-        <div class="video-box">
-            <video id="aliVideo" autoplay playsinline>
-                <source src="v1.mp4" type="video/mp4">
-                Браузерингиз видеони қўллаб-қувватламайди.
-            </video>
+    <!-- Video yuqorida -->
+    <div class="video-box">
+        <video id="aliVideo" autoplay playsinline controls>
+            <source src="v1.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Interaktiv qism va tugmalar pastda -->
+    <div class="interactive-area">
+        <div class="measure-container">
+            <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot1"></div>
+            <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot2"></div>
         </div>
 
-        <div class="interactive-area">
-            <!-- Тўлдириладиган такт катаклари -->
-            <div class="measure-container">
-                <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot1"></div>
-                <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot2"></div>
+        <div class="notes-palette">
+            <div class="note" draggable="true" ondragstart="drag(event)" id="n_quarter">
+                <img src="quarter.png" id="img_quarter" data-type="correct">
             </div>
-
-            <!-- Ноталар палитраси (Тўғри ва чалғитувчи ноталар) -->
-            <div class="notes-palette">
-                <!-- Тўғри ноталар -->
-                <div class="note" draggable="true" ondragstart="drag(event)" id="correct_1">
-                    <img src="quarter.png" id="img_c1" data-correct="true">
-                </div>
-                <div class="note" draggable="true" ondragstart="drag(event)" id="correct_2">
-                    <img src="eighths.png" id="img_c2" data-correct="true">
-                </div>
-
-                <!-- Чалғитувчи нота ва белгилар -->
-                <div class="note" draggable="true" ondragstart="drag(event)" id="wrong_1">
-                    <img src="clef.png" id="img_w1" data-correct="false">
-                </div>
-                <div class="note" draggable="true" ondragstart="drag(event)" id="wrong_2">
-                    <img src="eighth_single.png" id="img_w2" data-correct="false">
-                </div>
+            <div class="note" draggable="true" ondragstart="drag(event)" id="n_eighths">
+                <img src="eighths.png" id="img_eighths" data-type="correct">
             </div>
-
-            <!-- Текшириш тугмаси -->
-            <button class="btn-check" onclick="checkAnswer()">Текшириш</button>
+            <div class="note" draggable="true" ondragstart="drag(event)" id="n_clef">
+                <img src="clef.png" id="img_clef" data-type="wrong">
+            </div>
+            <div class="note" draggable="true" ondragstart="drag(event)" id="n_single">
+                <img src="eighth_single.png" id="img_single" data-type="wrong">
+            </div>
         </div>
+
+        <button class="btn-check" onclick="checkAnswer()">Tekshirish</button>
     </div>
 </div>
 
@@ -218,42 +200,39 @@
     }
 
     function drag(ev) {
-        const img = ev.target.querySelector('img');
-        ev.dataTransfer.setData("text", img.id);
+        let targetImg = ev.target.querySelector('img') || ev.target;
+        ev.dataTransfer.setData("imgSrc", targetImg.src);
+        ev.dataTransfer.setData("dataType", targetImg.getAttribute('data-type'));
     }
 
     function drop(ev) {
         ev.preventDefault();
         ev.currentTarget.classList.remove('hovered');
         
-        const data = ev.dataTransfer.getData("text");
-        const draggedImg = document.getElementById(data);
+        let imgSrc = ev.dataTransfer.getData("imgSrc");
+        let dataType = ev.dataTransfer.getData("dataType");
 
-        // Агар катакда олдин расм бўлса, янгисига алмаштиради
-        ev.currentTarget.innerHTML = '';
-        const clonedImg = draggedImg.cloneNode(true);
-        ev.currentTarget.appendChild(clonedImg);
+        ev.currentTarget.innerHTML = `<img src="${imgSrc}" data-type="${dataType}">`;
     }
 
     function checkAnswer() {
-        const slot1 = document.getElementById('slot1').querySelector('img');
-        const slot2 = document.getElementById('slot2').querySelector('img');
+        const img1 = document.getElementById('slot1').querySelector('img');
+        const img2 = document.getElementById('slot2').querySelector('img');
 
-        if (!slot1 || !slot2) {
-            alert("Илтимос, иккала катакни ҳам ноталар билан тўлдиринг!");
+        if (!img1 || !img2) {
+            aliVideo.src = 'v3.mp4';
+            aliVideo.play();
             return;
         }
 
-        const isSlot1Correct = slot1.getAttribute('data-correct') === 'true';
-        const isSlot2Correct = slot2.getAttribute('data-correct') === 'true';
+        const type1 = img1.getAttribute('data-type');
+        const type2 = img2.getAttribute('data-type');
 
-        if (isSlot1Correct && isSlot2Correct) {
-            // Тўғри жавоб: Баракалла! (v3.mp4)
-            aliVideo.src = 'v3.mp4';
+        if (type1 === 'correct' && type2 === 'correct') {
+            aliVideo.src = 'v2.mp4';
             aliVideo.play();
         } else {
-            // Хато жавоб: Кайтадан уриниб кур (v2.mp4)
-            aliVideo.src = 'v2.mp4';
+            aliVideo.src = 'v3.mp4';
             aliVideo.play();
         }
     }

@@ -78,7 +78,7 @@
             width: 75px;
             height: 75px;
             border: 2px dashed #3498db;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #ffffff;
             display: flex;
             justify-content: center;
@@ -108,25 +108,30 @@
         .note {
             width: 60px;
             height: 60px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #fff;
             transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
+        /* 4 хил рангли чиройли фонлар */
+        .note-yellow { background-color: #fff9c4; border: 2px solid #fbc02d; }
+        .note-red    { background-color: #ffebee; border: 2px solid #e53935; }
+        .note-green  { background-color: #e8f5e9; border: 2px solid #43a047; }
+        .note-blue   { background-color: #e3f2fd; border: 2px solid #1e88e5; }
+
         .note.selected {
-            border: 3px solid #e67e22;
-            background-color: #fef5e7;
-            transform: scale(1.08);
+            transform: scale(1.12);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            filter: brightness(0.95);
         }
 
         .note img {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
             pointer-events: none;
         }
@@ -162,16 +167,20 @@
         </div>
 
         <div class="notes-palette">
-            <div class="note" onclick="selectNote('quarter.png', 'correct', this)">
+            <!-- Сариқ нота -->
+            <div class="note note-yellow" onclick="selectNote('quarter.png', 'correct', this)">
                 <img src="quarter.png">
             </div>
-            <div class="note" onclick="selectNote('eighths.png', 'correct', this)">
+            <!-- Қизил нота -->
+            <div class="note note-red" onclick="selectNote('eighths.png', 'correct', this)">
                 <img src="eighths.png">
             </div>
-            <div class="note" onclick="selectNote('clef.png', 'wrong', this)">
+            <!-- Яшил нота -->
+            <div class="note note-green" onclick="selectNote('clef.png', 'wrong', this)">
                 <img src="clef.png">
             </div>
-            <div class="note" onclick="selectNote('eighth_single.png', 'wrong', this)">
+            <!-- Кўк нота -->
+            <div class="note note-blue" onclick="selectNote('eighth_single.png', 'wrong', this)">
                 <img src="eighth_single.png">
             </div>
         </div>

@@ -173,22 +173,23 @@
 
 <script>
     let score = 0;
-    let currentMode = 'v1';
+    let currentVideo = 'v1';
     const video = document.getElementById('aliVideo');
     const source = document.getElementById('videoSource');
 
+    // Видео тугагандаги автоматик занжир (логика)
     video.onended = function() {
-        if (currentMode === 'v2') {
-            resetSlots();
-            playAliVideo('v1.mp4', 'v1');
-        } else if (currentMode === 'v3') {
-            resetSlots();
-            playAliVideo('v1.mp4', 'v1');
+        if (currentVideo === 'v1') {
+            // 1-видео (вазифа) тугагач -> 2-видео (йўриқнома) бошланади
+            playAliVideo('v2.mp4', 'v2');
+        } else if (currentVideo === 'v3') {
+            // 3-видео (хато / бироз ўйлаб кўр) тугагач -> яна 2-видеога қайтади
+            playAliVideo('v2.mp4', 'v2');
         }
     };
 
-    function playAliVideo(fileName, mode) {
-        currentMode = mode;
+    function playAliVideo(fileName, videoId) {
+        currentVideo = videoId;
         source.src = fileName;
         video.load();
         video.play().catch(e => console.log("Auto-play:", e));
@@ -226,8 +227,14 @@
         if (slot1.children.length > 0 && slot2.children.length > 0) {
             score += 10;
             document.getElementById('score').innerText = score;
-            playAliVideo('v2.mp4', 'v2');
+            
+            // Тўғри бўлса, 2-видеони қайта ўйнатади ва янги раундга ўтади
+            playAliVideo('v2.mp4', 'v2_success');
+            setTimeout(() => {
+                resetSlots();
+            }, 2000);
         } else {
+            // Хато ёки тўлиқ бўлмаса -> 3-видео (бироз ўйлаб кўр)
             playAliVideo('v3.mp4', 'v3');
         }
     }

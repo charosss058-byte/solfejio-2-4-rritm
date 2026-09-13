@@ -90,6 +90,10 @@
             cursor: pointer;
             margin-top: 15px;
         }
+        .btn-reset {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -107,20 +111,23 @@
     <p>Ноталарни судраб ўтказинг ва тактни тўлдиринг!</p>
 
     <div class="drop-zone">
-        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="slot" id="slot1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="slot" id="slot2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
     </div>
 
     <div class="notes-palette">
         <div class="note" draggable="true" ondragstart="drag(event)" id="q1">
-            <img src="quarter.png" data-val="1">
+            <img src="quarter.png" id="img_q1" data-val="1">
         </div>
         <div class="note" draggable="true" ondragstart="drag(event)" id="e1">
-            <img src="eighths.png" data-val="1">
+            <img src="eighths.png" id="img_e1" data-val="1">
         </div>
     </div>
 
-    <button class="btn" onclick="checkAnswer()">Текшириш</button>
+    <div>
+        <button class="btn" onclick="checkAnswer()">Текшириш</button>
+        <button class="btn btn-reset" onclick="resetGame()">Қайтадан</button>
+    </div>
 </div>
 
 <script>
@@ -131,30 +138,52 @@
         let source = document.getElementById('videoSource');
         source.src = fileName;
         video.load();
-        video.play();
+        video.play().catch(e => console.log("Автоижро чеклови:", e));
     }
 
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+    function allowDrop(ev) { 
+        ev.preventDefault(); 
+    }
+
+    function drag(ev) { 
+        ev.dataTransfer.setData("text", ev.target.id); 
+    }
 
     function drop(ev) {
         ev.preventDefault();
         var data = ev.dataTransfer.getData("text");
-        var img = document.getElementById(data);
-        if(ev.target.classList.contains('slot') && ev.target.children.length === 0) {
-            ev.target.appendChild(img.cloneNode(true));
+        var draggedElement = document.getElementById(data);
+        
+        var targetSlot = ev.target;
+        if (!targetSlot.classList.contains('slot')) {
+            targetSlot = targetSlot.closest('.slot');
+        }
+
+        if (targetSlot && targetSlot.children.length === 0) {
+            let clone = draggedElement.cloneNode(true);
+            clone.id = data + "_clone_" + Math.random();
+            targetSlot.appendChild(clone);
         }
     }
 
     function checkAnswer() {
-        let slots = document.querySelectorAll('.slot img');
-        if (slots.length === 2) {
+        let slot1 = document.getElementById('slot1');
+        let slot2 = document.getElementById('slot2');
+
+        // Иккала катақда ҳам нота бор-yo'qligini текширамиз
+        if (slot1.children.length > 0 && slot2.children.length > 0) {
             score += 10;
             document.getElementById('score').innerText = score;
-            playAliVideo('v2.mp4');
+            playAliVideo('v2.mp4'); // Тўғри жавоб видеоси
         } else {
-            playAliVideo('v3.mp4');
+            playAliVideo('v3.mp4'); // Хато / тўлиқ эмас видеоси
         }
+    }
+
+    function resetGame() {
+        document.getElementById('slot1').innerHTML = '';
+        document.getElementById('slot2').innerHTML = '';
+        playAliVideo('v1.mp4');
     }
 </script>
 

@@ -3,7 +3,7 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2/4 Musiqa Vaqti - Ali Bilan</title>
     <style>
         * {
@@ -11,46 +11,42 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
         body {
             background: linear-gradient(135deg, #a8edda 0%, #fed6e3 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             padding: 10px;
         }
 
         .game-container {
             background: rgba(255, 255, 255, 0.96);
-            padding: 15px 20px;
+            padding: 15px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-            max-width: 480px;
+            max-width: 450px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-align: center;
         }
 
         h1 {
             color: #2c3e50;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
         }
 
         .video-box {
             width: 100%;
-            max-height: 200px;
+            max-height: 180px;
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             background: #000;
         }
 
@@ -66,47 +62,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .measure-container {
             display: flex;
             gap: 12px;
             background: #f8f9fa;
-            padding: 8px 16px;
+            padding: 10px 18px;
             border-radius: 14px;
             border: 2px dashed #bdc3c7;
         }
 
         .slot {
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
             border: 2px dashed #3498db;
             border-radius: 10px;
             background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.2s ease;
-        }
-
-        .slot.hovered {
-            background: #e8f4f8;
-            border-color: #2ecc71;
-            transform: scale(1.05);
+            cursor: pointer;
         }
 
         .slot img {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 85%;
+            max-height: 85%;
             object-fit: contain;
+            pointer-events: none;
         }
 
         .notes-palette {
             display: flex;
             gap: 10px;
             justify-content: center;
-            padding: 8px 12px;
+            padding: 10px;
             background: #ffffff;
             border-radius: 14px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -114,23 +105,27 @@
         }
 
         .note {
-            width: 58px;
-            height: 58px;
+            width: 60px;
+            height: 60px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            cursor: grab;
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             background: #fff;
-            touch-action: none; /* Mobilda sahifa surilib ketmasligi uchun */
-            position: relative;
-            z-index: 10;
+            transition: all 0.2s ease;
+        }
+
+        .note.selected {
+            border: 3px solid #e67e22;
+            background-color: #fef5e7;
+            transform: scale(1.08);
         }
 
         .note img {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 85%;
+            max-height: 85%;
             object-fit: contain;
             pointer-events: none;
         }
@@ -139,17 +134,12 @@
             background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
             border: none;
-            padding: 10px 28px;
+            padding: 12px 32px;
             font-size: 16px;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .btn-check:active {
-            transform: scale(0.96);
         }
     </style>
 </head>
@@ -171,106 +161,61 @@
         </div>
 
         <div class="notes-palette">
-            <div class="note" draggable="true" id="n_quarter">
+            <div class="note" id="n_quarter">
                 <img src="quarter.png" id="img_quarter" data-type="correct">
             </div>
-            <div class="note" draggable="true" id="n_eighths">
+            <div class="note" id="n_eighths">
                 <img src="eighths.png" id="img_eighths" data-type="correct">
             </div>
-            <div class="note" draggable="true" id="n_clef">
+            <div class="note" id="n_clef">
                 <img src="clef.png" id="img_clef" data-type="wrong">
             </div>
-            <div class="note" draggable="true" id="n_single">
+            <div class="note" id="n_single">
                 <img src="eighth_single.png" id="img_single" data-type="wrong">
             </div>
         </div>
 
-        <button class="btn-check" onclick="checkAnswer()">Tekshirish</button>
+        <button class="btn-check" id="btnCheck">Tekshirish</button>
     </div>
 </div>
 
 <script>
     const aliVideo = document.getElementById('aliVideo');
-    const notes = document.querySelectorAll('.note');
-    const slots = document.querySelectorAll('.slot');
+    let selectedNoteImg = null;
 
-    let draggedElement = null;
-    let touchClone = null;
-
-    // --- Kompyuter uchun Drag & Drop ---
-    notes.forEach(note => {
-        note.addEventListener('dragstart', (e) => {
-            draggedElement = note;
-        });
-
-        // Touch (Mobil) hodisalari
-        note.addEventListener('touchstart', handleTouchStart, {passive: false});
-        note.addEventListener('touchmove', handleTouchMove, {passive: false});
-        note.addEventListener('touchend', handleTouchEnd, {passive: false});
-    });
-
-    slots.forEach(slot => {
-        slot.addEventListener('dragover', (e) => e.preventDefault());
-        slot.addEventListener('drop', (e) => {
+    // --- 1. Нота босилганда танлаш ---
+    document.querySelectorAll('.note').forEach(note => {
+        const selectAction = (e) => {
             e.preventDefault();
-            if (draggedElement) {
-                const img = draggedElement.querySelector('img');
-                slot.innerHTML = `<img src="${img.src}" data-type="${img.getAttribute('data-type')}">`;
-            }
-        });
+            document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
+            note.classList.add('selected');
+            selectedNoteImg = note.querySelector('img');
+        };
+
+        note.addEventListener('touchstart', selectAction, { passive: false });
+        note.addEventListener('click', selectAction);
     });
 
-    // --- Mobil сенсор ҳодисалари (Touch Events) ---
-    function handleTouchStart(e) {
+    // --- 2. Катак босилганда нотани жойлаштириш ---
+    document.querySelectorAll('.slot').forEach(slot => {
+        const placeAction = (e) => {
+            e.preventDefault();
+            if (selectedNoteImg) {
+                slot.innerHTML = `<img src="${selectedNoteImg.src}" data-type="${selectedNoteImg.getAttribute('data-type')}">`;
+                document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
+                selectedNoteImg = null;
+            } else if (slot.querySelector('img')) {
+                slot.innerHTML = '';
+            }
+        };
+
+        slot.addEventListener('touchstart', placeAction, { passive: false });
+        slot.addEventListener('click', placeAction);
+    });
+
+    // --- 3. Текшириш тугмаси ---
+    const checkAction = (e) => {
         e.preventDefault();
-        draggedElement = this;
-        const img = this.querySelector('img');
-
-        // Barmoq ostida ko'rinib turishi uchun klon yaratish
-        touchClone = img.cloneNode(true);
-        touchClone.style.position = 'fixed';
-        touchClone.style.width = '60px';
-        touchClone.style.height = '60px';
-        touchClone.style.pointerEvents = 'none';
-        touchClone.style.zIndex = '1000';
-        touchClone.style.opacity = '0.8';
-
-        const touch = e.touches[0];
-        touchClone.style.left = (touch.clientX - 30) + 'px';
-        touchClone.style.top = (touch.clientY - 30) + 'px';
-
-        document.body.appendChild(touchClone);
-    }
-
-    function handleTouchMove(e) {
-        e.preventDefault();
-        if (!touchClone) return;
-
-        const touch = e.touches[0];
-        touchClone.style.left = (touch.clientX - 30) + 'px';
-        touchClone.style.top = (touch.clientY - 30) + 'px';
-    }
-
-    function handleTouchEnd(e) {
-        e.preventDefault();
-        if (!touchClone) return;
-
-        const touch = e.changedTouches[0];
-        touchClone.remove();
-        touchClone = null;
-
-        // Barmoq qo'yib yuborilgan nuqtadagi elementni aniqlash
-        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
-        const slot = targetElement ? targetElement.closest('.slot') : null;
-
-        if (slot && draggedElement) {
-            const img = draggedElement.querySelector('img');
-            slot.innerHTML = `<img src="${img.src}" data-type="${img.getAttribute('data-type')}">`;
-        }
-    }
-
-    // --- Tekshirish mantiqi ---
-    function checkAnswer() {
         const img1 = document.getElementById('slot1').querySelector('img');
         const img2 = document.getElementById('slot2').querySelector('img');
 
@@ -290,7 +235,11 @@
             aliVideo.src = 'v3.mp4';
             aliVideo.play();
         }
-    }
+    };
+
+    const btnCheck = document.getElementById('btnCheck');
+    btnCheck.addEventListener('touchstart', checkAction, { passive: false });
+    btnCheck.addEventListener('click', checkAction);
 </script>
 
 </body>

@@ -4,247 +4,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2/4 Musiqa Vaqti - Ali Bilan</title>
+    <title>2/4 Ritm Пазли - Али Билaн</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: linear-gradient(135deg, #a8edda 0%, #fed6e3 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            padding: 10px;
+            padding: 20px;
         }
-        .container {
-            background: rgba(255, 255, 255, 0.96);
-            padding: 15px 20px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-            text-align: center;
-            max-width: 480px;
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            max-width: 900px;
             width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-box {
+            width: 100%;
+            max-width: 420px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: #000;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .interactive-area {
+            flex: 1;
+            min-width: 300px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-        }
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 0 5px;
-        }
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .score-board {
-            font-size: 16px;
-            font-weight: bold;
-            color: #d63384;
-            background: #ffe6f2;
-            padding: 4px 12px;
-            border-radius: 12px;
-        }
-        .ali-box {
-            position: relative;
-            width: 100%;
-            height: 180px;
-            background-color: #000;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .instruction {
-            font-size: 14px;
-            color: #555;
-        }
-        .drop-zone {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            background: url('box.png') no-repeat center/contain;
-            padding: 10px;
-            min-height: 90px;
-            align-items: center;
-        }
-        .slot {
-            width: 75px;
-            height: 75px;
-            border: 2px dashed #0d6efd;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255,255,255,0.85);
-        }
-        .slot img, .note img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        .notes-palette {
-            display: flex;
-            justify-content: center;
             gap: 20px;
         }
+
+        /* Такт идишлари (Drop slots) */
+        .measure-container {
+            display: flex;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 16px;
+            border: 3px dashed #bdc3c7;
+        }
+
+        .slot {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #3498db;
+            border-radius: 12px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .slot.hovered {
+            background: #e8f4f8;
+            border-color: #2ecc71;
+            transform: scale(1.05);
+        }
+
+        .slot img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        /* Ноталар палитраси */
+        .notes-palette {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+
         .note {
-            width: 70px;
-            height: 70px;
+            width: 75px;
+            height: 75px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             cursor: grab;
             display: flex;
-            align-items: center;
             justify-content: center;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            align-items: center;
+            background: #fff;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .btn-group {
-            display: flex;
-            gap: 10px;
+
+        .note:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .btn {
-            background-color: #198754;
+
+        .note img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
             border: none;
-            padding: 8px 20px;
-            font-size: 15px;
+            padding: 14px 32px;
+            font-size: 18px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: 0.2s;
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+            transition: all 0.3s ease;
         }
-        .btn:hover {
-            opacity: 0.9;
+
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.4);
         }
-        .btn-reset {
-            background-color: #dc3545;
+
+        .btn-check:active {
+            transform: translateY(1px);
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-row">
-        <div class="title">2/4 Musiqa Vaqti</div>
-        <div class="score-board">Ball: <span id="score">0</span></div>
-    </div>
+<div class="game-container">
+    <h1>🎶 2/4 Мусиқа Вақти - Али Билaн</h1>
 
-    <div class="ali-box">
-        <video id="aliVideo" autoplay playsinline controls>
-            <source id="videoSource" src="v1.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <p class="instruction">Notalarni kataklarga sudrab o'tkazing va taktni to'ldiring!</p>
-
-    <div class="drop-zone">
-        <div class="slot" id="slot1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <div class="slot" id="slot2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-    </div>
-
-    <div class="notes-palette">
-        <div class="note" draggable="true" ondragstart="drag(event)" id="q1">
-            <img src="quarter.png" id="img_q1">
+    <div class="main-content">
+        <!-- Видео ойнаси -->
+        <div class="video-box">
+            <video id="aliVideo" autoplay playsinline>
+                <source src="v1.mp4" type="video/mp4">
+                Браузерингиз видеони қўллаб-қувватламайди.
+            </video>
         </div>
-        <div class="note" draggable="true" ondragstart="drag(event)" id="e1">
-            <img src="eighths.png" id="img_e1">
-        </div>
-    </div>
 
-    <div class="btn-group">
-        <button class="btn" onclick="checkAnswer()">Tekshirish</button>
-        <button class="btn btn-reset" onclick="resetGame()">Qaytadan</button>
+        <div class="interactive-area">
+            <!-- Тўлдириладиган такт катаклари -->
+            <div class="measure-container">
+                <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot1"></div>
+                <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot2"></div>
+            </div>
+
+            <!-- Ноталар палитраси (Тўғри ва чалғитувчи ноталар) -->
+            <div class="notes-palette">
+                <!-- Тўғри ноталар -->
+                <div class="note" draggable="true" ondragstart="drag(event)" id="correct_1">
+                    <img src="quarter.png" id="img_c1" data-correct="true">
+                </div>
+                <div class="note" draggable="true" ondragstart="drag(event)" id="correct_2">
+                    <img src="eighths.png" id="img_c2" data-correct="true">
+                </div>
+
+                <!-- Чалғитувчи нота ва белгилар -->
+                <div class="note" draggable="true" ondragstart="drag(event)" id="wrong_1">
+                    <img src="clef.png" id="img_w1" data-correct="false">
+                </div>
+                <div class="note" draggable="true" ondragstart="drag(event)" id="wrong_2">
+                    <img src="eighth_single.png" id="img_w2" data-correct="false">
+                </div>
+            </div>
+
+            <!-- Текшириш тугмаси -->
+            <button class="btn-check" onclick="checkAnswer()">Текшириш</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let score = 0;
-    let currentVideo = 'v1';
-    const video = document.getElementById('aliVideo');
-    const source = document.getElementById('videoSource');
+    const aliVideo = document.getElementById('aliVideo');
 
-    // Видео тугагандаги логика
-    video.onended = function() {
-        if (currentVideo === 'v1') {
-            // v1 (Вазифа) тугагач -> v2 (Йўриқнома/кутиш) бошланади
-            playAliVideo('v2.mp4', 'v2');
-        } else if (currentVideo === 'v3') {
-            // v3 (Тўғри жавоб/ғалаба) тугагач -> катаклар тозаланади ва янги раунд учун v1 ўйнайди
-            resetSlots();
-            playAliVideo('v1.mp4', 'v1');
-        }
-    };
-
-    function playAliVideo(fileName, videoId) {
-        currentVideo = videoId;
-        source.src = fileName;
-        video.load();
-        video.play().catch(e => console.log("Auto-play restriction:", e));
+    function allowDrop(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.add('hovered');
     }
 
-    function allowDrop(ev) { 
-        ev.preventDefault(); 
-    }
-
-    function drag(ev) { 
-        ev.dataTransfer.setData("text", ev.target.id); 
+    function drag(ev) {
+        const img = ev.target.querySelector('img');
+        ev.dataTransfer.setData("text", img.id);
     }
 
     function drop(ev) {
         ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        var draggedElement = document.getElementById(data);
+        ev.currentTarget.classList.remove('hovered');
         
-        var targetSlot = ev.target;
-        if (!targetSlot.classList.contains('slot')) {
-            targetSlot = targetSlot.closest('.slot');
-        }
+        const data = ev.dataTransfer.getData("text");
+        const draggedImg = document.getElementById(data);
 
-        if (targetSlot && targetSlot.children.length === 0) {
-            let clone = draggedElement.cloneNode(true);
-            clone.id = data + "_clone_" + Math.random();
-            targetSlot.appendChild(clone);
-        }
+        // Агар катакда олдин расм бўлса, янгисига алмаштиради
+        ev.currentTarget.innerHTML = '';
+        const clonedImg = draggedImg.cloneNode(true);
+        ev.currentTarget.appendChild(clonedImg);
     }
 
     function checkAnswer() {
-        let slot1 = document.getElementById('slot1');
-        let slot2 = document.getElementById('slot2');
+        const slot1 = document.getElementById('slot1').querySelector('img');
+        const slot2 = document.getElementById('slot2').querySelector('img');
 
-        if (slot1.children.length > 0 && slot2.children.length > 0) {
-            score += 10;
-            document.getElementById('score').innerText = score;
-            
-            // Тўғри бўлса -> v3.mp4 (Баракалла / Тўғри)
-            playAliVideo('v3.mp4', 'v3');
-        } else {
-            // Хато ёки тўлиқ бўлмаса -> v2.mp4 (Қайта уриниб кўр / Йўриқнома)
-            playAliVideo('v2.mp4', 'v2');
+        if (!slot1 || !slot2) {
+            alert("Илтимос, иккала катакни ҳам ноталар билан тўлдиринг!");
+            return;
         }
-    }
 
-    function resetSlots() {
-        document.getElementById('slot1').innerHTML = '';
-        document.getElementById('slot2').innerHTML = '';
-    }
+        const isSlot1Correct = slot1.getAttribute('data-correct') === 'true';
+        const isSlot2Correct = slot2.getAttribute('data-correct') === 'true';
 
-    function resetGame() {
-        resetSlots();
-        playAliVideo('v1.mp4', 'v1');
+        if (isSlot1Correct && isSlot2Correct) {
+            // Тўғри жавоб: Баракалла! (v3.mp4)
+            aliVideo.src = 'v3.mp4';
+            aliVideo.play();
+        } else {
+            // Хато жавоб: Кайтадан уриниб кур (v2.mp4)
+            aliVideo.src = 'v2.mp4';
+            aliVideo.play();
+        }
     }
 </script>
 

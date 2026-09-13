@@ -11,6 +11,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
@@ -19,7 +21,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden; /* Ekran pastga surilmaydi */
+            overflow: hidden;
             padding: 10px;
         }
 
@@ -43,10 +45,9 @@
             font-weight: bold;
         }
 
-        /* Video ixchamlashtirildi */
         .video-box {
             width: 100%;
-            max-height: 220px;
+            max-height: 200px;
             border-radius: 14px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -60,7 +61,6 @@
             display: block;
         }
 
-        /* Interaktiv qism */
         .interactive-area {
             width: 100%;
             display: flex;
@@ -123,11 +123,9 @@
             justify-content: center;
             align-items: center;
             background: #fff;
-            transition: transform 0.2s;
-        }
-
-        .note:hover {
-            transform: translateY(-3px);
+            touch-action: none; /* Mobilda sahifa surilib ketmasligi uchun */
+            position: relative;
+            z-index: 10;
         }
 
         .note img {
@@ -150,9 +148,8 @@
             transition: all 0.2s ease;
         }
 
-        .btn-check:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        .btn-check:active {
+            transform: scale(0.96);
         }
     </style>
 </head>
@@ -161,31 +158,29 @@
 <div class="game-container">
     <h1>🎶 2/4 Musiqa Vaqti - Ali Bilan</h1>
 
-    <!-- Video yuqorida ixcham holatda -->
     <div class="video-box">
         <video id="aliVideo" autoplay playsinline controls>
             <source src="v1.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- Interaktiv qism va tugmalar -->
     <div class="interactive-area">
         <div class="measure-container">
-            <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot1"></div>
-            <div class="slot" ondrop="drop(event)" ondragover="allowDrop(event)" id="slot2"></div>
+            <div class="slot" id="slot1"></div>
+            <div class="slot" id="slot2"></div>
         </div>
 
         <div class="notes-palette">
-            <div class="note" draggable="true" ondragstart="drag(event)" id="n_quarter">
+            <div class="note" draggable="true" id="n_quarter">
                 <img src="quarter.png" id="img_quarter" data-type="correct">
             </div>
-            <div class="note" draggable="true" ondragstart="drag(event)" id="n_eighths">
+            <div class="note" draggable="true" id="n_eighths">
                 <img src="eighths.png" id="img_eighths" data-type="correct">
             </div>
-            <div class="note" draggable="true" ondragstart="drag(event)" id="n_clef">
+            <div class="note" draggable="true" id="n_clef">
                 <img src="clef.png" id="img_clef" data-type="wrong">
             </div>
-            <div class="note" draggable="true" ondragstart="drag(event)" id="n_single">
+            <div class="note" draggable="true" id="n_single">
                 <img src="eighth_single.png" id="img_single" data-type="wrong">
             </div>
         </div>
@@ -196,28 +191,85 @@
 
 <script>
     const aliVideo = document.getElementById('aliVideo');
+    const notes = document.querySelectorAll('.note');
+    const slots = document.querySelectorAll('.slot');
 
-    function allowDrop(ev) {
-        ev.preventDefault();
-        ev.currentTarget.classList.add('hovered');
+    let draggedElement = null;
+    let touchClone = null;
+
+    // --- Kompyuter uchun Drag & Drop ---
+    notes.forEach(note => {
+        note.addEventListener('dragstart', (e) => {
+            draggedElement = note;
+        });
+
+        // Touch (Mobil) hodisalari
+        note.addEventListener('touchstart', handleTouchStart, {passive: false});
+        note.addEventListener('touchmove', handleTouchMove, {passive: false});
+        note.addEventListener('touchend', handleTouchEnd, {passive: false});
+    });
+
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => e.preventDefault());
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (draggedElement) {
+                const img = draggedElement.querySelector('img');
+                slot.innerHTML = `<img src="${img.src}" data-type="${img.getAttribute('data-type')}">`;
+            }
+        });
+    });
+
+    // --- Mobil сенсор ҳодисалари (Touch Events) ---
+    function handleTouchStart(e) {
+        e.preventDefault();
+        draggedElement = this;
+        const img = this.querySelector('img');
+
+        // Barmoq ostida ko'rinib turishi uchun klon yaratish
+        touchClone = img.cloneNode(true);
+        touchClone.style.position = 'fixed';
+        touchClone.style.width = '60px';
+        touchClone.style.height = '60px';
+        touchClone.style.pointerEvents = 'none';
+        touchClone.style.zIndex = '1000';
+        touchClone.style.opacity = '0.8';
+
+        const touch = e.touches[0];
+        touchClone.style.left = (touch.clientX - 30) + 'px';
+        touchClone.style.top = (touch.clientY - 30) + 'px';
+
+        document.body.appendChild(touchClone);
     }
 
-    function drag(ev) {
-        let targetImg = ev.target.querySelector('img') || ev.target;
-        ev.dataTransfer.setData("imgSrc", targetImg.src);
-        ev.dataTransfer.setData("dataType", targetImg.getAttribute('data-type'));
+    function handleTouchMove(e) {
+        e.preventDefault();
+        if (!touchClone) return;
+
+        const touch = e.touches[0];
+        touchClone.style.left = (touch.clientX - 30) + 'px';
+        touchClone.style.top = (touch.clientY - 30) + 'px';
     }
 
-    function drop(ev) {
-        ev.preventDefault();
-        ev.currentTarget.classList.remove('hovered');
-        
-        let imgSrc = ev.dataTransfer.getData("imgSrc");
-        let dataType = ev.dataTransfer.getData("dataType");
+    function handleTouchEnd(e) {
+        e.preventDefault();
+        if (!touchClone) return;
 
-        ev.currentTarget.innerHTML = `<img src="${imgSrc}" data-type="${dataType}">`;
+        const touch = e.changedTouches[0];
+        touchClone.remove();
+        touchClone = null;
+
+        // Barmoq qo'yib yuborilgan nuqtadagi elementni aniqlash
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        const slot = targetElement ? targetElement.closest('.slot') : null;
+
+        if (slot && draggedElement) {
+            const img = draggedElement.querySelector('img');
+            slot.innerHTML = `<img src="${img.src}" data-type="${img.getAttribute('data-type')}">`;
+        }
     }
 
+    // --- Tekshirish mantiqi ---
     function checkAnswer() {
         const img1 = document.getElementById('slot1').querySelector('img');
         const img2 = document.getElementById('slot2').querySelector('img');

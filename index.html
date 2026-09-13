@@ -86,11 +86,13 @@
             cursor: pointer;
         }
 
+        /* Катак ичидаги расм пастдагидек аниқ ва рангли кўриниши учун */
         .slot img {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             object-fit: contain;
             pointer-events: none;
+            filter: none !important; /* Рангларни ўзгартирмаслик учун */
         }
 
         .notes-palette {
@@ -191,7 +193,6 @@
         activeType = type;
     }
 
-    // Катакчаларни босганда ишлаш мантиғи
     document.querySelectorAll('.slot').forEach(slot => {
         slot.addEventListener('click', () => {
             if (activeSrc) {

@@ -87,8 +87,8 @@
         }
 
         .slot img {
-            max-width: 85%;
-            max-height: 85%;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
             pointer-events: none;
         }
@@ -124,8 +124,8 @@
         }
 
         .note img {
-            max-width: 85%;
-            max-height: 85%;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
             pointer-events: none;
         }
@@ -156,77 +156,72 @@
 
     <div class="interactive-area">
         <div class="measure-container">
-            <div class="slot" id="slot1"></div>
-            <div class="slot" id="slot2"></div>
+            <div class="slot" id="slot1" data-src="" data-type=""></div>
+            <div class="slot" id="slot2" data-src="" data-type=""></div>
         </div>
 
         <div class="notes-palette">
-            <div class="note" id="n_quarter">
-                <img src="quarter.png" id="img_quarter" data-type="correct">
+            <div class="note" onclick="selectNote('quarter.png', 'correct', this)">
+                <img src="quarter.png">
             </div>
-            <div class="note" id="n_eighths">
-                <img src="eighths.png" id="img_eighths" data-type="correct">
+            <div class="note" onclick="selectNote('eighths.png', 'correct', this)">
+                <img src="eighths.png">
             </div>
-            <div class="note" id="n_clef">
-                <img src="clef.png" id="img_clef" data-type="wrong">
+            <div class="note" onclick="selectNote('clef.png', 'wrong', this)">
+                <img src="clef.png">
             </div>
-            <div class="note" id="n_single">
-                <img src="eighth_single.png" id="img_single" data-type="wrong">
+            <div class="note" onclick="selectNote('eighth_single.png', 'wrong', this)">
+                <img src="eighth_single.png">
             </div>
         </div>
 
-        <button class="btn-check" id="btnCheck">Tekshirish</button>
+        <button class="btn-check" onclick="checkAnswer()">Tekshirish</button>
     </div>
 </div>
 
 <script>
     const aliVideo = document.getElementById('aliVideo');
-    let selectedNoteImg = null;
+    let activeSrc = null;
+    let activeType = null;
 
-    // --- 1. Нота босилганда танлаш ---
-    document.querySelectorAll('.note').forEach(note => {
-        const selectAction = (e) => {
-            e.preventDefault();
-            document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
-            note.classList.add('selected');
-            selectedNoteImg = note.querySelector('img');
-        };
+    function selectNote(src, type, element) {
+        document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
+        element.classList.add('selected');
+        activeSrc = src;
+        activeType = type;
+    }
 
-        note.addEventListener('touchstart', selectAction, { passive: false });
-        note.addEventListener('click', selectAction);
-    });
-
-    // --- 2. Катак босилганда нотани жойлаштириш ---
+    // Катакчаларни босганда ишлаш мантиғи
     document.querySelectorAll('.slot').forEach(slot => {
-        const placeAction = (e) => {
-            e.preventDefault();
-            if (selectedNoteImg) {
-                slot.innerHTML = `<img src="${selectedNoteImg.src}" data-type="${selectedNoteImg.getAttribute('data-type')}">`;
-                document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
-                selectedNoteImg = null;
-            } else if (slot.querySelector('img')) {
-                slot.innerHTML = '';
-            }
-        };
+        slot.addEventListener('click', () => {
+            if (activeSrc) {
+                slot.innerHTML = `<img src="${activeSrc}">`;
+                slot.setAttribute('data-src', activeSrc);
+                slot.setAttribute('data-type', activeType);
 
-        slot.addEventListener('touchstart', placeAction, { passive: false });
-        slot.addEventListener('click', placeAction);
+                document.querySelectorAll('.note').forEach(n => n.classList.remove('selected'));
+                activeSrc = null;
+                activeType = null;
+            } else if (slot.innerHTML !== '') {
+                slot.innerHTML = '';
+                slot.setAttribute('data-src', '');
+                slot.setAttribute('data-type', '');
+            }
+        });
     });
 
-    // --- 3. Текшириш тугмаси ---
-    const checkAction = (e) => {
-        e.preventDefault();
-        const img1 = document.getElementById('slot1').querySelector('img');
-        const img2 = document.getElementById('slot2').querySelector('img');
+    function checkAnswer() {
+        const slot1 = document.getElementById('slot1');
+        const slot2 = document.getElementById('slot2');
 
-        if (!img1 || !img2) {
+        const type1 = slot1.getAttribute('data-type');
+        const type2 = slot2.getAttribute('data-type');
+
+        if (!type1 || !type2) {
             aliVideo.src = 'v3.mp4';
             aliVideo.play();
             return;
         }
-
-        const type1 = img1.getAttribute('data-type');
-        const type2 = img2.getAttribute('data-type');
 
         if (type1 === 'correct' && type2 === 'correct') {
             aliVideo.src = 'v2.mp4';
@@ -235,11 +230,7 @@
             aliVideo.src = 'v3.mp4';
             aliVideo.play();
         }
-    };
-
-    const btnCheck = document.getElementById('btnCheck');
-    btnCheck.addEventListener('touchstart', checkAction, { passive: false });
-    btnCheck.addEventListener('click', checkAction);
+    }
 </script>
 
 </body>
